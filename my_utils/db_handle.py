@@ -20,7 +20,9 @@ class DBHandle:
     except ValueError:
       # Lấy credentials từ Streamlit secrets
       if 'firebase' in st.secrets:
-          cred = credentials.Certificate(st.secrets['firebase'])
+          # Convert secrets dict to proper credential format
+          cred_dict = dict(st.secrets['firebase'])
+          cred = credentials.Certificate(cred_dict)
       else:
           # Fallback to local file for development
           cred = credentials.Certificate('hchuong-firebase-adminsdk-1m82k-a70c60ad91.json')
