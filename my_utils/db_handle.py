@@ -7,10 +7,10 @@ from streamlit.runtime.uploaded_file_manager import UploadedFile
 import os
 
 class DBHandle:
-  def __init__(self, dbname, credentials_path='hchuong-firebase-adminsdk-1m82k-a70c60ad91.json') -> None:
+  def __init__(self, dbname) -> None:
     self.dbName = dbname
 
-    # Nếu có file credentials được truyền vào, sử dụng nó
+    # Sử dụng credentials từ Streamlit secrets
     import firebase_admin
     from firebase_admin import credentials, firestore, storage
 
@@ -18,7 +18,12 @@ class DBHandle:
     try:
       firebase_admin.get_app()
     except ValueError:
-      cred = credentials.Certificate(credentials_path)
+      # Lấy credentials từ Streamlit secrets
+      if 'firebase' in st.secrets:
+          cred = credentials.Certificate(st.secrets['firebase'])
+      else:
+          # Fallback to local file for development
+          cred = credentials.Certificate('hchuong-firebase-adminsdk-1m82k-a70c60ad91.json')
       firebase_admin.initialize_app(cred)
 
     self.db = firestore.client()
