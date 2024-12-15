@@ -22,11 +22,23 @@ class DBHandle:
       try:
         if 'firebase' in st.secrets:
             # Parse credentials từ JSON string
-            cred_info = json.loads(st.secrets['firebase'])
-            cred = credentials.Certificate(cred_info)
+            try:
+                cred_info = json.loads(st.secrets['firebase'])
+                # Verify required fields
+                required_fields = ['type', 'project_id', 'private_key', 'client_email']
+                for field in required_fields:
+                    if field not in cred_info:
+                        raise ValueError(f"Missing required field: {field}")
+                cred = credentials.Certificate(cred_info)
+            except json.JSONDecodeError as je:
+                st.error(f"Error parsing Firebase credentials JSON: {str(je)}")
+                raise
+            except ValueError as ve:
+                st.error(f"Invalid Firebase credentials format: {str(ve)}")
+                raise
         else:
-            # Fallback to local file for development
-            cred = credentials.Certificate('hchuong-firebase-adminsdk-1m82k-a70c60ad91.json')
+            st.error("Firebase credentials not found in Streamlit secrets")
+            raise ValueError("Firebase credentials not found in Streamlit secrets")
         firebase_admin.initialize_app(cred)
       except Exception as e:
         st.error(f"Error initializing Firebase: {str(e)}")
