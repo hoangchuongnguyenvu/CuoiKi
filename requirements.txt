@@ -11,10 +11,10 @@ firebase-admin
 requests
 uuid
 python-dotenv
-torch
-torchvision
+torch --index-url https://download.pytorch.org/whl/cpu
+torchvision --index-url https://download.pytorch.org/whl/cpu
 mediapipe
-dlib
-face-recognition     
+cmake
+face-recognition-models
 ultralytics  # for YOLO
-tensorflow
+tensorflow-cpu
