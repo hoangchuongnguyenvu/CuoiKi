@@ -32,34 +32,39 @@ class DBHandle:
   def insert(self, data: dict):
     try:
       new_ref = self.db.collection(self.dbName).add(data)
-      new_reff = (new_ref[0]) 
-      print('Time insert:', new_ref[0].ToDatatime())
+      new_reff = new_ref[0]
+      print('Time insert:', new_ref[0].to_datetime())
       return new_ref[1].id
     except Exception as e:
+      print(f"Error inserting data: {str(e)}")
       return False
 
   def update(self, id, data: dict):
     try:
       return self.db.collection(self.dbName).document(id).update(data)
     except Exception as e:
+      print(f"Error updating data: {str(e)}")
       return False
 
   def get_all(self):
     try:
       return self.db.collection(self.dbName).stream()
     except Exception as e:
+      print(f"Error getting all data: {str(e)}")
       return False
 
   def get_by_id(self, id):
     try:
       return self.db.collection(self.dbName).document(id).get()
     except Exception as e:
+      print(f"Error getting data by ID: {str(e)}")
       return False
 
   def delete(self, id):
     try:
       return self.db.collection(self.dbName).document(id).delete()
     except Exception as e:
+      print(f"Error deleting data: {str(e)}")
       return False      
   
   def upload_file(self, file: UploadedFile, path: str):
