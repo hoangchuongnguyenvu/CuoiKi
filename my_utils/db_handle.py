@@ -5,6 +5,7 @@ import time
 import streamlit as st
 from streamlit.runtime.uploaded_file_manager import UploadedFile
 import os
+import json
 
 class DBHandle:
   def __init__(self, dbname) -> None:
@@ -18,15 +19,18 @@ class DBHandle:
     try:
       firebase_admin.get_app()
     except ValueError:
-      # Lấy credentials từ Streamlit secrets
-      if 'firebase' in st.secrets:
-          # Convert secrets dict to proper credential format
-          cred_dict = dict(st.secrets['firebase'])
-          cred = credentials.Certificate(cred_dict)
-      else:
-          # Fallback to local file for development
-          cred = credentials.Certificate('hchuong-firebase-adminsdk-1m82k-a70c60ad91.json')
-      firebase_admin.initialize_app(cred)
+      try:
+        if 'firebase' in st.secrets:
+            # Parse credentials từ JSON string
+            cred_info = json.loads(st.secrets['firebase'])
+            cred = credentials.Certificate(cred_info)
+        else:
+            # Fallback to local file for development
+            cred = credentials.Certificate('hchuong-firebase-adminsdk-1m82k-a70c60ad91.json')
+        firebase_admin.initialize_app(cred)
+      except Exception as e:
+        st.error(f"Error initializing Firebase: {str(e)}")
+        raise e
 
     self.db = firestore.client()
     self.bucket = storage.bucket("hchuong.appspot.com")
